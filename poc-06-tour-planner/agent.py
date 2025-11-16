@@ -20,6 +20,7 @@ The agent maintains conversation context and remembers:
 - Iterative refinements to your trip plan
 """
 
+from datetime import datetime
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
 from tools import (
@@ -32,6 +33,10 @@ from tools import (
     save_trip_state,
     get_trip_state
 )
+
+# Get current date for context awareness
+CURRENT_DATE = datetime.now().strftime("%B %d, %Y")
+CURRENT_YEAR = datetime.now().year
 
 # Create LiteLLM wrapper for Groq (shared by all agents)
 groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
