@@ -10,7 +10,7 @@ This POC demonstrates using a third-party LLM provider (Groq) with Google ADK vi
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (from the root directory):
 ```bash
 cd ..
 pip install -r requirements.txt
@@ -21,20 +21,47 @@ pip install -r requirements.txt
 export GROQ_API_KEY="your-groq-api-key"
 ```
 
+Or create a `.env` file in this directory:
+```
+GROQ_API_KEY=your-groq-api-key
+```
+
 ## Running the Agent
 
+Navigate to this directory first:
 ```bash
-python agent.py
+cd poc-02-groq-simple
+```
+
+### Option 1: Terminal Interface (Recommended)
+```bash
+adk run .
+```
+
+### Option 2: Web Browser UI
+```bash
+adk web
+```
+
+### Option 3: API Server
+```bash
+adk api_server
 ```
 
 ## What's Demonstrated
 
-- Creating an `LlmAgent` with LiteLLM integration
+- Creating an `Agent` with LiteLLM integration
 - Using Groq's hosted models (Llama 3.3 70B)
 - Same ADK patterns work with different providers
-- Runtime and session management with third-party LLMs
+- Model flexibility using LiteLLM wrapper
 
 ## Code Structure
 
-- `agent.py` - Main agent implementation with LiteLLM configuration
+- `agent.py` - Main agent implementation with `root_agent` definition
 - Uses `LiteLlm` wrapper to integrate Groq models
+
+## Troubleshooting
+
+**Error: "GROQ_API_KEY not set"**
+- Set the environment variable: `export GROQ_API_KEY="your-key"`
+- Or create a `.env` file in this directory
