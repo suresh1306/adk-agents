@@ -11,7 +11,7 @@ This POC demonstrates creating custom calculator tools and integrating them with
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (from the root directory):
 ```bash
 cd ..
 pip install -r requirements.txt
@@ -24,8 +24,24 @@ export GROQ_API_KEY="your-groq-api-key"
 
 ## Running the Agent
 
+Navigate to this directory first:
 ```bash
-python agent.py
+cd poc-04-groq-calculator
+```
+
+### Option 1: Terminal Interface (Recommended)
+```bash
+adk run .
+```
+
+### Option 2: Web Browser UI
+```bash
+adk web
+```
+
+### Option 3: API Server
+```bash
+adk api_server
 ```
 
 ## What's Demonstrated
@@ -38,7 +54,7 @@ python agent.py
 
 ## Code Structure
 
-- `agent.py` - Main agent implementation
+- `agent.py` - Main agent implementation with `root_agent` definition
 - `tools.py` - Custom calculator tool definitions
 - Includes basic arithmetic and advanced mathematical functions
 
@@ -49,4 +65,3 @@ Try asking:
 - "Calculate the square root of 144"
 - "What is sin(45 degrees)?"
 - "Calculate 2^10"
-- "What's the natural log of 100?"
