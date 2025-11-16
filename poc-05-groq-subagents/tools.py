@@ -6,7 +6,7 @@ This module provides tools used by various sub-agents.
 
 import math
 from typing import Dict, List, Union
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 
 def web_search(query: str, max_results: int = 5) -> Dict[str, List[Dict[str, str]]]:

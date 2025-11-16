@@ -33,7 +33,7 @@ from tools import (
     get_trip_state
 )
 
-# Use Groq's tool-use optimized model for better function calling
+# Create LiteLLM wrapper for Groq (shared by all agents)
 groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
 
 # Create specialized sub-agents with enhanced context awareness
