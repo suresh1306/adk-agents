@@ -5,7 +5,7 @@ This module provides mathematical calculation tools.
 """
 
 import math
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 
 def calculate(expression: str) -> Dict[str, Union[str, float]]:
@@ -64,7 +64,7 @@ def calculate(expression: str) -> Dict[str, Union[str, float]]:
         }
 
 
-def advanced_math(operation: str, value: float, value2: float = None) -> Dict[str, Union[str, float]]:
+def advanced_math(operation: str, value: float, value2: Optional[float] = None) -> Dict[str, Union[str, float]]:
     """
     Perform advanced mathematical operations.
 

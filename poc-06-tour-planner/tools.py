@@ -5,9 +5,9 @@ This module provides specialized tools for travel and tour planning.
 """
 
 import math
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from datetime import datetime, timedelta
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 
 def search_destination(destination: str, query_type: str = "attractions") -> Dict:
@@ -112,7 +112,7 @@ def calculate_budget(
 def create_itinerary(
     destination: str,
     num_days: int,
-    interests: List[str] = None
+    interests: Optional[List[str]] = None
 ) -> Dict:
     """
     Create a day-by-day itinerary template.
@@ -303,5 +303,107 @@ def calculate_travel_distance(
     except Exception as e:
         return {
             "error": f"Distance calculation failed: {str(e)}",
+            "success": False
+        }
+
+# Session State Management Tools
+# These tools allow the agent to save and retrieve trip planning state
+# across the conversation, enabling context-aware, continuous planning
+
+_trip_state = {}  # In-memory state store (in production, use persistent storage)
+
+
+def save_trip_state(
+    key: str,
+    value: str,
+    trip_id: str = "current"
+) -> Dict[str, Union[str, bool]]:
+    """
+    Save trip planning state for context persistence across conversation.
+    
+    Use this to remember important trip details like:
+    - Destination(s) being planned
+    - Budget constraints
+    - Number of travelers
+    - Travel dates
+    - User preferences and interests
+    - Status of planning
+    
+    Args:
+        key: The state key (e.g., "destination", "budget", "travelers", "dates", "interests")
+        value: The value to save (as string)
+        trip_id: Trip identifier (default: "current" for active planning)
+    
+    Returns:
+        Confirmation of saved state
+    """
+    try:
+        if trip_id not in _trip_state:
+            _trip_state[trip_id] = {}
+        
+        _trip_state[trip_id][key] = value
+        
+        return {
+            "trip_id": trip_id,
+            "key": key,
+            "value": value,
+            "message": f"Saved {key} for trip {trip_id}",
+            "success": True
+        }
+    
+    except Exception as e:
+        return {
+            "error": f"Failed to save state: {str(e)}",
+            "success": False
+        }
+
+
+def get_trip_state(
+    key: str = None,
+    trip_id: str = "current"
+) -> Dict[str, Union[str, bool, Dict]]:
+    """
+    Retrieve saved trip planning state to maintain conversation context.
+    
+    Use this to recall previously mentioned trip details and maintain
+    intelligent, context-aware conversations.
+    
+    Args:
+        key: Specific state key to retrieve (if None, returns all state)
+        trip_id: Trip identifier (default: "current" for active planning)
+    
+    Returns:
+        The requested state value(s)
+    """
+    try:
+        if trip_id not in _trip_state:
+            return {
+                "trip_id": trip_id,
+                "message": "No saved state for this trip",
+                "state": {},
+                "success": True
+            }
+        
+        if key is None:
+            # Return all state for this trip
+            return {
+                "trip_id": trip_id,
+                "state": _trip_state[trip_id],
+                "success": True
+            }
+        else:
+            # Return specific key
+            value = _trip_state[trip_id].get(key)
+            return {
+                "trip_id": trip_id,
+                "key": key,
+                "value": value,
+                "found": value is not None,
+                "success": True
+            }
+    
+    except Exception as e:
+        return {
+            "error": f"Failed to retrieve state: {str(e)}",
             "success": False
         }
