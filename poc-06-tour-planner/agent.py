@@ -9,6 +9,7 @@ To run this agent:
   adk api_server          # Start API server
 """
 
+from datetime import datetime
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
 from tools import (
@@ -20,6 +21,10 @@ from tools import (
     calculate_travel_distance
 )
 
+# Get current date for context awareness
+CURRENT_DATE = datetime.now().strftime("%B %d, %Y")
+CURRENT_YEAR = datetime.now().year
+
 # Create LiteLLM wrapper for Groq (shared by all agents)
 groq_model = LiteLlm(model="groq/llama-3.3-70b-versatile")
 
@@ -30,14 +35,21 @@ research_agent = Agent(
     name="destination_researcher",
     model=groq_model,
     description="Researches destinations, attractions, and points of interest",
-    instruction="""You are a destination research specialist. Your expertise includes:
+    instruction=f"""You are a destination research specialist. Your expertise includes:
     - Finding information about tourist destinations
     - Identifying popular attractions and activities
     - Researching local culture and customs
     - Finding restaurants and accommodations
 
+    IMPORTANT CONTEXT:
+    - Current date: {CURRENT_DATE}
+    - Current year: {CURRENT_YEAR}
+    - Provide current, up-to-date travel information relevant to {CURRENT_YEAR}
+    - Do NOT reference outdated COVID-19 pandemic restrictions from 2020-2022
+    - Focus on current travel requirements, visa policies, and safety guidelines
+
     Use the search_destination tool to gather information.
-    Provide detailed, helpful insights about destinations.""",
+    Provide detailed, helpful insights about destinations with current, relevant information.""",
     tools=[search_destination, calculate_travel_distance],
 )
 
@@ -78,11 +90,16 @@ weather_agent = Agent(
     name="weather_advisor",
     model=groq_model,
     description="Provides weather information and seasonal travel advice",
-    instruction="""You are a weather and seasonal travel advisor. Your expertise includes:
+    instruction=f"""You are a weather and seasonal travel advisor. Your expertise includes:
     - Providing weather information for destinations
     - Suggesting best times to visit
     - Advising on what to pack based on weather
     - Seasonal travel recommendations
+
+    IMPORTANT CONTEXT:
+    - Current date: {CURRENT_DATE}
+    - When providing seasonal advice, consider the current time of year
+    - Provide relevant packing suggestions for the current or upcoming season
 
     Use the get_weather_info tool for weather data.
     Help travelers prepare for weather conditions.""",
@@ -110,13 +127,20 @@ root_agent = Agent(
     name="tour_planner_coordinator",
     model=groq_model,
     description="Coordinates comprehensive tour planning with specialized agents",
-    instruction="""You are the Tour Planner Coordinator managing a team of travel specialists:
+    instruction=f"""You are the Tour Planner Coordinator managing a team of travel specialists:
 
     1. Destination Researcher - for finding attractions and information
     2. Budget Calculator - for cost estimation and financial planning
     3. Itinerary Builder - for creating day-by-day schedules
     4. Weather Advisor - for weather information and seasonal advice
     5. Travel Advisor - for recommendations and tips
+
+    IMPORTANT CONTEXT:
+    - Current date: {CURRENT_DATE}
+    - Current year: {CURRENT_YEAR}
+    - Ensure all information provided is current and relevant to {CURRENT_YEAR}
+    - Do NOT reference outdated pandemic-era travel restrictions
+    - Provide modern, up-to-date travel planning assistance
 
     Your role is to:
     - Understand traveler requirements (destination, duration, budget, interests)
