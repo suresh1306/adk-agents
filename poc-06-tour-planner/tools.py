@@ -7,7 +7,7 @@ This module provides specialized tools for travel and tour planning.
 import math
 from typing import Dict, List, Union
 from datetime import datetime, timedelta
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 
 def search_destination(destination: str, query_type: str = "attractions") -> Dict:
