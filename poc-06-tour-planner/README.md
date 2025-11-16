@@ -17,11 +17,10 @@ This POC demonstrates a comprehensive multi-agent tour planning system with spec
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (from the root directory):
 ```bash
 cd ..
 pip install -r requirements.txt
-pip install duckduckgo-search requests  # For web search and API calls
 ```
 
 2. Set your Groq API key:
@@ -31,8 +30,24 @@ export GROQ_API_KEY="your-groq-api-key"
 
 ## Running the Agent
 
+Navigate to this directory first:
 ```bash
-python agent.py
+cd poc-06-tour-planner
+```
+
+### Option 1: Terminal Interface (Recommended)
+```bash
+adk run .
+```
+
+### Option 2: Web Browser UI
+```bash
+adk web
+```
+
+### Option 3: API Server
+```bash
+adk api_server
 ```
 
 ## What's Demonstrated
@@ -57,7 +72,7 @@ Tour Planner Coordinator
 
 ## Code Structure
 
-- `agent.py` - Main multi-agent tour planning system
+- `agent.py` - Main multi-agent tour planning system with `root_agent`
 - `tools.py` - Custom tools for various planning tasks
 - Comprehensive set of tools for travel planning
 
@@ -81,4 +96,3 @@ The system will:
 - "What's the budget for a week in London?"
 - "Create an itinerary for Barcelona with focus on art and culture"
 - "What's the weather like in Bali in December?"
-- "Suggest activities for a family trip to New York"

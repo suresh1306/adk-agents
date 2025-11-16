@@ -14,11 +14,10 @@ This POC demonstrates a multi-agent system with a coordinator agent and speciali
 
 ## Setup
 
-1. Install dependencies:
+1. Install dependencies (from the root directory):
 ```bash
 cd ..
 pip install -r requirements.txt
-pip install duckduckgo-search  # For web search
 ```
 
 2. Set your Groq API key:
@@ -28,13 +27,29 @@ export GROQ_API_KEY="your-groq-api-key"
 
 ## Running the Agent
 
+Navigate to this directory first:
 ```bash
-python agent.py
+cd poc-05-groq-subagents
+```
+
+### Option 1: Terminal Interface (Recommended)
+```bash
+adk run .
+```
+
+### Option 2: Web Browser UI
+```bash
+adk web
+```
+
+### Option 3: API Server
+```bash
+adk api_server
 ```
 
 ## What's Demonstrated
 
-- Creating multiple specialized `LlmAgent` instances
+- Creating multiple specialized `Agent` instances
 - Composing agents into a hierarchy with `sub_agents`
 - Coordinator agent delegates tasks to appropriate specialists
 - Each sub-agent has its own tools and expertise
@@ -51,7 +66,7 @@ Coordinator Agent (Main)
 
 ## Code Structure
 
-- `agent.py` - Main multi-agent system
+- `agent.py` - Main multi-agent system with `root_agent` definition
 - `tools.py` - Shared tools for sub-agents
 - Each agent has specific instructions and capabilities
 
