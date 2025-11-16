@@ -5,7 +5,7 @@ This module provides specialized tools for travel and tour planning.
 """
 
 import math
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from datetime import datetime, timedelta
 from duckduckgo_search import DDGS
 
@@ -112,7 +112,7 @@ def calculate_budget(
 def create_itinerary(
     destination: str,
     num_days: int,
-    interests: List[str] = None
+    interests: Optional[List[str]] = None
 ) -> Dict:
     """
     Create a day-by-day itinerary template.
