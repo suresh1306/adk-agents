@@ -71,6 +71,7 @@ research_agent = Agent(
     - Include local insights and cultural tips
     - Remember and reference earlier destination discussions""",
     tools=[search_destination, calculate_travel_distance],
+    output_key="research_summary"  # Saves response to state["research_summary"]
 )
 
 # 2. Budget Calculator Agent
@@ -101,6 +102,7 @@ budget_agent = Agent(
     - Suggest where to splurge and where to save
     - Remember user's budget comfort level from conversation""",
     tools=[calculate_budget],
+    output_key="budget_plan"  # Saves response to state["budget_plan"]
 )
 
 # 3. Itinerary Builder Agent
@@ -132,6 +134,7 @@ itinerary_agent = Agent(
     - Iterate and refine based on user feedback
     - Remember and improve on previous itinerary versions""",
     tools=[create_itinerary],
+    output_key="itinerary_plan"  # Saves response to state["itinerary_plan"]
 )
 
 # 4. Weather & Timing Agent
@@ -162,6 +165,7 @@ weather_agent = Agent(
     - Provide detailed packing recommendations
     - Warn about extreme weather or busy seasons""",
     tools=[get_weather_info],
+    output_key="weather_advice"  # Saves response to state["weather_advice"]
 )
 
 # 5. Travel Recommendations Agent
@@ -192,6 +196,7 @@ recommendations_agent = Agent(
     - Suggest both popular and off-beaten-path experiences
     - Remember user's preferences from entire conversation""",
     tools=[get_travel_recommendations],
+    output_key="travel_tips"  # Saves response to state["travel_tips"]
 )
 
 # Create the intelligent coordinator agent
