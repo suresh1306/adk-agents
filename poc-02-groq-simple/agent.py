@@ -10,11 +10,11 @@ To run this agent:
 """
 
 from google.adk.agents import Agent
-from google.adk.llms import LiteLlm
+from google.adk.models.lite_llm import LiteLlm
 
 # Create LiteLLM wrapper for Groq
 groq_model = LiteLlm(
-    model="groq/llama-3.3-70b-versatile",  # Groq's Llama 3.3 70B model
+    model="groq/llama-3-groq-70b-8192-tool-use-preview",  # Groq's Llama 3.3 70B model
 )
 
 # Define the root agent (required by ADK)
