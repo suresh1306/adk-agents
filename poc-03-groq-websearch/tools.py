@@ -5,7 +5,7 @@ This module provides a web search functionality using DuckDuckGo.
 """
 
 from typing import Dict, List
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 
 def web_search(query: str, max_results: int = 5) -> Dict[str, List[Dict[str, str]]]:
