@@ -1,0 +1,10 @@
+# Google ADK and dependencies
+google-adk>=0.1.0
+
+# LiteLLM for multi-provider support
+litellm>=1.0.0
+
+# Additional utilities
+requests>=2.31.0
+python-dotenv>=1.0.0
+duckduckgo-search>=4.0.0  # For web search functionality in POCs 3, 5, 6
