@@ -30,7 +30,8 @@ CURRENT_DATE = datetime.now().strftime("%B %d, %Y")
 CURRENT_YEAR = datetime.now().year
 
 # Create LiteLLM wrapper for Groq (shared by all agents)
-groq_model = LiteLlm(model="groq/llama-3.3-70b-versatile")
+# Using tool-use optimized model for function calling support
+groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
 
 # Create specialized sub-agents with output_key for state persistence
 
