@@ -10,7 +10,7 @@ To run this agent:
 """
 
 from google.adk.agents import Agent
-from google.adk.llms import LiteLlm
+from google.adk.models.lite_llm import LiteLlm
 
 # Create LiteLLM wrapper for Groq
 groq_model = LiteLlm(
