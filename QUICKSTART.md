@@ -6,6 +6,8 @@ Get started with Google ADK Python agents in 5 minutes!
 
 ```bash
 # 1. Install dependencies
+python -m venv venv
+source venv/bin/activate # or venv\Scripts\activate.bat on Windows
 pip install -r requirements.txt
 
 # 2. Set API keys
