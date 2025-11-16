@@ -10,7 +10,7 @@ To run this agent:
 """
 
 from google.adk.agents import Agent
-from google.adk.llms import LiteLlm
+from google.adk.models.lite_llm import LiteLlm
 from tools import (
     search_destination,
     calculate_budget,
