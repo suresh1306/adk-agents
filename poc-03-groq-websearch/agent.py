@@ -15,7 +15,7 @@ from tools import web_search
 
 # Create LiteLLM wrapper for Groq
 groq_model = LiteLlm(
-    model="groq/llama-3.3-70b-versatile",
+    model="groq/llama-3-groq-70b-8192-tool-use-preview",
 )
 
 # Define the root agent with custom web search tool

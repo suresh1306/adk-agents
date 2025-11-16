@@ -21,7 +21,7 @@ from tools import (
 )
 
 # Create LiteLLM wrapper for Groq (shared by all agents)
-groq_model = LiteLlm(model="groq/llama-3.3-70b-versatile")
+groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
 
 # Create specialized sub-agents
 
