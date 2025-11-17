@@ -9,6 +9,7 @@ import { useSessions } from '@/hooks/useSessions';
 import { ChatHistory } from './ChatHistory';
 import { ChatInput } from './ChatInput';
 import { SessionList } from './SessionList';
+import { VoiceButton } from './VoiceButton';
 import { logger } from '@/utils/logger';
 
 const DEFAULT_USER_ID = 'user_web_client';
@@ -152,12 +153,25 @@ export const ChatPage: React.FC = () => {
         {/* Chat history */}
         <ChatHistory messages={messages} isLoading={isLoading} />
 
-        {/* Chat input */}
-        <ChatInput
-          onSendMessage={sendMessage}
-          disabled={isLoading}
-          placeholder="Ask about travel destinations, planning tips, or anything else..."
-        />
+        {/* Input area with voice and text */}
+        <div className="chat-input-area">
+          <VoiceButton
+            userId={userId}
+            sessionId={currentSession?.session_id}
+            voice="alloy"
+            onTranscription={(text) => {
+              // Send transcribed text as a message
+              sendMessage(text);
+            }}
+            disabled={isLoading}
+          />
+
+          <ChatInput
+            onSendMessage={sendMessage}
+            disabled={isLoading}
+            placeholder="Type or use voice to ask about travel destinations..."
+          />
+        </div>
       </main>
     </div>
   );
