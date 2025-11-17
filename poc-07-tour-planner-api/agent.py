@@ -44,7 +44,7 @@ groq_model = LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct")
 
 # Use Gemini for coordinator (better sub-agent support in Google ADK)
 # Groq has issues with sub-agents being exposed as tools
-coordinator_model = "gemini-2.0-flash-exp"
+coordinator_model = "gemini-2.5-flash-lite"
 
 # ============================================================================
 # SPECIALIZED SUB-AGENTS WITH STATE MANAGEMENT
