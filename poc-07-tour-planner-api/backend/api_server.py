@@ -98,7 +98,7 @@ class VoiceSynthesisRequest(BaseModel):
     """Voice synthesis request"""
     text: str
     voice: str = Field(default="alloy", description="Voice: alloy, echo, fable, onyx, nova, shimmer")
-    model: str = Field(default="tts-1", description="Model: tts-1 or tts-1-hd")
+    model: str = Field(default="playai-tts", description="Model: playai-tts (Groq TTS)")
 
 class VoiceChatRequest(BaseModel):
     """Voice chat request"""
@@ -562,14 +562,14 @@ async def transcribe_audio(
 @app.post("/api/voice/synthesize")
 async def synthesize_speech(request: VoiceSynthesisRequest):
     """
-    Convert text to speech using OpenAI TTS
+    Convert text to speech using Groq PlayAI TTS
 
     Example:
       POST /api/voice/synthesize
       {
         "text": "Hello, how can I help you plan your trip?",
         "voice": "alloy",
-        "model": "tts-1"
+        "model": "playai-tts"
       }
 
     Returns:

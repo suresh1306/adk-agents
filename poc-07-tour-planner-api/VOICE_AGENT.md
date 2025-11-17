@@ -6,7 +6,7 @@ Complete guide to the intelligent voice agent capabilities in the Tour Planner a
 
 The Tour Planner now features a fully integrated voice agent with:
 - **Speech-to-Text**: Groq Whisper large-v3-turbo for accurate transcription
-- **Text-to-Speech**: OpenAI TTS with natural-sounding voices
+- **Text-to-Speech**: Groq PlayAI TTS with natural-sounding voices
 - **Voice Activity Detection (VAD)**: Intelligent detection of speech start/end
 - **Real-time Processing**: Streaming audio responses
 - **Human-like Interaction**: Natural conversation flow with visual feedback
@@ -21,7 +21,7 @@ The Tour Planner now features a fully integrated voice agent with:
 - **High-Quality Recording**: 16kHz sample rate with noise suppression
 
 ### 🔊 Voice Output
-- **Natural Voices**: Choose from 6 different OpenAI TTS voices
+- **Natural Voices**: Choose from 6 different Groq PlayAI TTS voices
 - **Streaming Audio**: Immediate playback as audio is received
 - **Multiple Voice Options**:
   - `alloy` - Neutral and balanced (default)
@@ -48,7 +48,7 @@ Core service handling all voice operations:
 ```python
 class VoiceAgentService:
     - transcribe_audio(): STT using Groq Whisper
-    - synthesize_speech(): TTS using OpenAI
+    - synthesize_speech(): TTS using Groq PlayAI
     - synthesize_speech_streaming(): Streaming TTS
     - process_voice_message(): End-to-end voice processing
 ```
@@ -69,7 +69,7 @@ POST /api/voice/synthesize
 {
   "text": "Hello, how can I help you?",
   "voice": "alloy",
-  "model": "tts-1"
+  "model": "playai-tts"
 }
 ```
 
@@ -162,7 +162,6 @@ cp .env.example .env
 Edit `.env` with your API keys:
 ```env
 GROQ_API_KEY=your_groq_api_key
-OPENAI_API_KEY=your_openai_api_key
 GOOGLE_API_KEY=your_google_api_key
 ```
 
@@ -257,7 +256,7 @@ const vad = new VoiceActivityDetector({
 
 ### Output (TTS)
 - **Format**: MP3
-- **Quality**: Standard (tts-1) or HD (tts-1-hd)
+- **Model**: Groq PlayAI TTS (playai-tts)
 - **Streaming**: Chunked delivery for immediate playback
 
 ## Performance Optimization
@@ -364,12 +363,12 @@ AudioTranscription(
 ```
 
 #### `synthesize_speech(text, voice, model)`
-Convert text to speech using OpenAI TTS.
+Convert text to speech using Groq PlayAI TTS.
 
 **Parameters:**
 - `text` (str): Text to synthesize
 - `voice` (str): Voice name (alloy, echo, fable, onyx, nova, shimmer)
-- `model` (str): Model name (tts-1, tts-1-hd)
+- `model` (str): Model name (playai-tts)
 
 **Returns:**
 - `bytes`: MP3 audio data
@@ -526,7 +525,7 @@ navigator.mediaDevices.getUserMedia({ audio: true })
 ### Issue: Slow response times
 
 **Optimizations:**
-- Use tts-1 instead of tts-1-hd for faster TTS
+- Groq PlayAI TTS is already optimized for speed
 - Enable streaming TTS (already implemented)
 - Increase network bandwidth
 - Deploy backend closer to users
@@ -560,8 +559,8 @@ speechEndFrames: 15
 
 ## Resources
 
-- **Groq Whisper**: https://groq.com/
-- **OpenAI TTS**: https://platform.openai.com/docs/guides/text-to-speech
+- **Groq API (Whisper & PlayAI TTS)**: https://groq.com/
+- **Groq API Documentation**: https://console.groq.com/docs/
 - **Web Audio API**: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
 - **MediaRecorder API**: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
 
