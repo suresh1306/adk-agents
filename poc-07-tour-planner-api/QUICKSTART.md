@@ -6,6 +6,7 @@ Get the Tour Planner API running in 3 minutes!
 
 - Python 3.10 or higher
 - GROQ API key ([Get one free here](https://console.groq.com/keys))
+- Google API key ([Get one here](https://aistudio.google.com/app/apikey))
 
 ## Step 1: Install Dependencies
 
@@ -14,19 +15,22 @@ cd poc-07-tour-planner-api
 pip install -r requirements.txt
 ```
 
-## Step 2: Set API Key
+## Step 2: Set API Keys
 
 Create `.env` file:
 
 ```bash
-echo "GROQ_API_KEY=your_actual_groq_api_key_here" > .env
+cat > .env << 'EOF'
+GROQ_API_KEY=your_actual_groq_api_key_here
+GOOGLE_API_KEY=your_actual_google_api_key_here
+EOF
 ```
 
 Or copy the example:
 
 ```bash
 cp .env.example .env
-# Then edit .env and add your GROQ_API_KEY
+# Then edit .env and add your GROQ_API_KEY and GOOGLE_API_KEY
 ```
 
 ## Step 3: Run the Server
@@ -145,11 +149,12 @@ lsof -i :8000
 uvicorn api_server:app --reload --port 8080
 ```
 
-### "GROQ_API_KEY not set"
+### "API key not set" errors
 
-Make sure `.env` file exists and contains:
+Make sure `.env` file exists and contains both keys:
 ```
 GROQ_API_KEY=gsk_xxxx...
+GOOGLE_API_KEY=AIza...
 ```
 
 ### Test client can't connect

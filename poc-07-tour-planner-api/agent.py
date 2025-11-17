@@ -42,6 +42,10 @@ CURRENT_YEAR = datetime.now().year
 # This model is specifically designed for function calling and tool use
 groq_model = LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct")
 
+# Use Gemini for coordinator (better sub-agent support in Google ADK)
+# Groq has issues with sub-agents being exposed as tools
+coordinator_model = "gemini-2.0-flash-exp"
+
 # ============================================================================
 # SPECIALIZED SUB-AGENTS WITH STATE MANAGEMENT
 # ============================================================================
@@ -302,7 +306,7 @@ Tools available: get_travel_recommendations""",
 
 root_agent = Agent(
     name="intelligent_tour_planner",
-    model=groq_model,
+    model=coordinator_model,  # Use Gemini for better sub-agent support
     description="Your personal AI travel planning assistant with memory and context awareness",
     instruction=f"""You are an Intelligent Tour Planning Assistant coordinating a team of travel specialists.
 
@@ -541,3 +545,6 @@ collaborative travel planning experience that feels personal and continuous!**""
         recommendations_agent
     ],
 )
+
+# Alias for FastAPI compatibility
+coordinator_agent = root_agent
