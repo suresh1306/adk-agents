@@ -165,6 +165,15 @@ GROQ_API_KEY=your_groq_api_key
 GOOGLE_API_KEY=your_google_api_key
 ```
 
+**⚠️ Accept Groq PlayAI TTS Terms (REQUIRED):**
+
+Before using voice features, you must accept the PlayAI TTS terms:
+
+1. Visit: https://console.groq.com/playground?model=playai-tts
+2. Sign in with your Groq account
+3. Accept the model terms when prompted
+4. Wait a moment for the acceptance to propagate
+
 **Start Server:**
 ```bash
 uvicorn api_server:app --reload --port 8000
@@ -293,6 +302,13 @@ Solution: Speak louder or adjust VAD threshold
 ```
 Error: GROQ_API_KEY is required
 Solution: Add API keys to backend/.env file
+```
+
+**PlayAI TTS Terms Not Accepted**
+```
+Error: PlayAI TTS requires terms acceptance
+Solution: Visit https://console.groq.com/playground?model=playai-tts
+         and accept the terms, then restart the server
 ```
 
 **Network Error**
