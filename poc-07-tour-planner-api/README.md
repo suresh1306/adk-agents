@@ -1,435 +1,463 @@
-# POC-07: Tour Planner FastAPI with Streaming
+# POC-07: Tour Planner AI with Modern Chat UI
 
-FastAPI wrapper around the intelligent tour planner agent with streaming chat support using Server-Sent Events (SSE).
+A full-stack intelligent tour planning assistant with:
+- **Backend**: FastAPI with Google ADK agents and streaming SSE support
+- **Frontend**: Modern React TypeScript chat UI with real-time streaming
+
+## Project Structure
+
+```
+poc-07-tour-planner-api/
+├── backend/                    # Python FastAPI backend
+│   ├── agent.py               # Tour planner agent with sub-agents
+│   ├── api_server.py          # FastAPI server with SSE streaming
+│   ├── tools.py               # Agent tools (search, weather, etc.)
+│   ├── requirements.txt       # Python dependencies
+│   ├── .env.example           # Environment configuration
+│   └── README.md              # Backend documentation
+│
+├── frontend/                   # React TypeScript UI
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   ├── hooks/             # Custom hooks (useChat, useSessions)
+│   │   ├── services/          # API integration with SSE
+│   │   ├── types/             # TypeScript definitions
+│   │   ├── utils/             # Logging, error handling
+│   │   └── styles/            # CSS styling
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── README.md              # Frontend documentation
+│
+└── README.md                   # This file
+```
 
 ## Features
 
-- ✅ **Streaming Chat API** - Real-time responses using Server-Sent Events (SSE)
-- ✅ **Non-Streaming Chat API** - Traditional request/response for simpler clients
-- ✅ **Session Management** - Create, list, get, and delete sessions
-- ✅ **Google ADK Runner Pattern** - Full state management with InMemorySessionService
-- ✅ **CORS Support** - Ready for frontend integration
-- ✅ **OpenAPI Documentation** - Auto-generated at `/docs` and `/redoc`
-- ✅ **Health Check** - Monitor API status
+### Backend Features
+
+✅ **Intelligent Agent System**
+- Coordinator agent with specialized sub-agents
+- Tool calling for destination search, weather, activities
+- Session management with conversation history
+- Streaming responses via Server-Sent Events (SSE)
+
+✅ **RESTful API**
+- `/api/chat/stream` - Streaming chat with SSE
+- `/api/chat` - Non-streaming chat
+- `/api/sessions/*` - Session CRUD operations
+- `/api/health` - Health check endpoint
+
+✅ **Production Ready**
+- CORS support for frontend integration
+- Error handling and logging
+- Async/await throughout
+- InMemorySessionService (upgradeable to database)
+
+### Frontend Features
+
+✅ **Modern Chat Interface**
+- Real-time message streaming
+- Markdown rendering with syntax highlighting
+- Auto-resizing input box
+- Responsive design (mobile-friendly)
+
+✅ **Session Management**
+- Create and manage multiple chat sessions
+- Session history with timestamps
+- Delete sessions
+- Auto-save conversations
+
+✅ **Developer Experience**
+- Full TypeScript coverage
+- Modular component architecture
+- Custom hooks for state management
+- Comprehensive error handling
+- Centralized logging
+- Hot module replacement (HMR)
+
+✅ **User Experience**
+- Smooth animations and transitions
+- Loading indicators
+- Tool call visibility
+- Error messages
+- Dark mode support
+- Keyboard shortcuts
 
 ## Quick Start
 
-### 1. Install Dependencies
+### Prerequisites
+
+- **Backend**: Python 3.11+, Google Cloud credentials
+- **Frontend**: Node.js 18+, npm
+
+### 1. Start the Backend
 
 ```bash
-cd poc-07-tour-planner-api
+cd backend
+
+# Set up Python environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### 2. Set Environment Variables
+# Configure environment
+cp .env.example .env
+# Edit .env with your Google Cloud credentials
 
-Create `.env` file:
-
-```bash
-# Required: API keys for LLMs
-GROQ_API_KEY=your_groq_api_key_here       # For sub-agents
-GOOGLE_API_KEY=your_google_api_key_here   # For coordinator (Gemini)
-```
-
-**Note:** The coordinator uses Gemini for better sub-agent support in Google ADK, while sub-agents use Groq for tool execution.
-
-### 3. Run the API Server
-
-```bash
+# Start the API server
 uvicorn api_server:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Or using Python directly:
+Backend will be available at `http://localhost:8000`
+API docs at `http://localhost:8000/docs`
+
+### 2. Start the Frontend
 
 ```bash
-python api_server.py
+cd frontend
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+
+# Start development server
+npm run dev
 ```
 
-### 4. Access the API
+Frontend will be available at `http://localhost:3000`
 
-- **API Base URL**: http://localhost:8000
-- **Interactive Docs**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **Health Check**: http://localhost:8000/api/health
+### 3. Use the Application
 
-## API Endpoints
+1. Open `http://localhost:3000` in your browser
+2. Start chatting with the Tour Planner AI
+3. Try queries like:
+   - "I want to plan a trip to Japan"
+   - "What's the weather like in Paris?"
+   - "Suggest family-friendly activities in London"
 
-### 🏥 Health Check
+## Architecture
+
+### Communication Flow
+
+```
+User Browser
+    ↓
+React UI (Port 3000)
+    ↓
+Vite Dev Proxy (/api → :8000)
+    ↓
+FastAPI Server (Port 8000)
+    ↓
+Google ADK Runner
+    ↓
+Coordinator Agent
+    ↓
+Sub-Agents (Search, Weather, Activities)
+    ↓
+External APIs / Tools
+```
+
+### Streaming Architecture
+
+```
+1. User sends message → POST /api/chat/stream
+2. Backend creates SSE connection
+3. Agent processes request:
+   - Calls tools (search_destination, get_weather, etc.)
+   - Generates response chunks
+4. Server sends SSE events:
+   - type: 'content' → Text chunks
+   - type: 'tool_call' → Tool execution
+   - type: 'done' → Complete
+5. Frontend updates UI in real-time
+```
+
+### Technology Stack
+
+**Backend**
+- FastAPI - High-performance async web framework
+- Google ADK (Agent Development Kit) - Agent framework
+- Google Gemini - LLM for agent intelligence
+- Pydantic - Data validation
+- Uvicorn - ASGI server
+
+**Frontend**
+- React 18 - UI library
+- TypeScript - Type safety
+- Vite - Build tool and dev server
+- React Markdown - Markdown rendering
+- date-fns - Date formatting
+
+## Development
+
+### Backend Development
 
 ```bash
-GET /api/health
+cd backend
+
+# Run with auto-reload
+uvicorn api_server:app --reload --port 8000
+
+# Run tests (if available)
+pytest
+
+# Type checking
+mypy .
 ```
 
-**Response:**
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-11-17T10:30:00",
-  "app_name": "TourPlannerAPI",
-  "session_service": "InMemorySessionService"
-}
-```
-
-### 💬 Streaming Chat (SSE)
+### Frontend Development
 
 ```bash
+cd frontend
+
+# Development server
+npm run dev
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Production build
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Configuration
+
+### Backend Configuration (backend/.env)
+
+```env
+# Google Cloud
+GOOGLE_CLOUD_PROJECT=your-project-id
+GOOGLE_APPLICATION_CREDENTIALS=path/to/credentials.json
+
+# API Keys
+GOOGLE_API_KEY=your-api-key
+
+# Server
+HOST=0.0.0.0
+PORT=8000
+```
+
+### Frontend Configuration (frontend/.env)
+
+```env
+# API
+VITE_API_BASE_URL=/api
+
+# Logging
+VITE_LOG_LEVEL=INFO
+```
+
+## API Documentation
+
+### Chat Endpoints
+
+**Stream Chat (SSE)**
+```http
 POST /api/chat/stream
 Content-Type: application/json
 
 {
-  "message": "I want to visit Japan for 10 days",
+  "message": "Plan a trip to Japan",
   "user_id": "user_123",
-  "session_id": "session_abc"
+  "session_id": "session_abc"  // optional
 }
 ```
 
-**Response (Server-Sent Events):**
-```
-data: {"type": "content", "text": "Wonderful!", "role": "assistant"}
+Response: Server-Sent Events stream
 
-data: {"type": "tool_call", "tool": "search_destination", "status": "executing"}
-
-data: {"type": "content", "text": " Let me gather information about Japan."}
-
-data: {"type": "done", "session_id": "session_abc"}
-```
-
-### 💬 Non-Streaming Chat
-
-```bash
+**Non-Streaming Chat**
+```http
 POST /api/chat
 Content-Type: application/json
 
 {
-  "message": "What's the budget for 2 adults and 2 kids?",
+  "message": "Plan a trip to Japan",
   "user_id": "user_123",
-  "session_id": "session_abc"
+  "session_id": "session_abc"  // optional
 }
 ```
 
-**Response:**
-```json
-{
-  "response": "Let me calculate a budget for your family of 4...",
-  "session_id": "session_abc",
-  "user_id": "user_123"
-}
+### Session Endpoints
+
+- `POST /api/sessions` - Create session
+- `GET /api/sessions?user_id={id}` - List sessions
+- `GET /api/sessions/{id}?user_id={uid}` - Get session
+- `DELETE /api/sessions/{id}?user_id={uid}` - Delete session
+
+### Health Check
+
+```http
+GET /api/health
 ```
 
-### 📝 Session Management
+See `backend/README.md` for complete API documentation.
 
-#### Create Session
+## Extending the Application
 
-```bash
-POST /api/sessions
-Content-Type: application/json
+### Adding New Agent Tools
 
-{
-  "user_id": "user_123",
-  "initial_state": {
-    "temp:language": "en"
-  }
-}
-```
+1. Define tool in `backend/tools.py`
+2. Add tool to agent in `backend/agent.py`
+3. Tool calls will automatically appear in UI
 
-#### List Sessions
+### Adding New UI Features
 
-```bash
-GET /api/sessions?user_id=user_123
-```
+1. Create component in `frontend/src/components/`
+2. Add types in `frontend/src/types/`
+3. Integrate in `ChatPage.tsx`
 
-#### Get Session Details
+### Adding New API Endpoints
 
-```bash
-GET /api/sessions/session_abc?user_id=user_123
-```
+1. Add endpoint in `backend/api_server.py`
+2. Add types in `frontend/src/types/`
+3. Add service method in `frontend/src/services/api.ts`
+4. Create hook if needed in `frontend/src/hooks/`
 
-#### Delete Session
+## Deployment
 
-```bash
-DELETE /api/sessions/session_abc?user_id=user_123
-```
+### Backend Deployment
 
-## Usage Examples
+Options:
+- **Google Cloud Run**: Containerize and deploy
+- **Google App Engine**: Deploy with `app.yaml`
+- **Kubernetes**: Deploy with k8s manifests
+- **VM**: Run with systemd service
 
-### Using cURL - Streaming Chat
+### Frontend Deployment
 
-```bash
-curl -N -X POST http://localhost:8000/api/chat/stream \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "I want to plan a trip to Jordan",
-    "user_id": "user_001",
-    "session_id": "my_session"
-  }'
-```
+Options:
+- **Static Hosting**: Build and deploy `dist/` to:
+  - Vercel
+  - Netlify
+  - Firebase Hosting
+  - Google Cloud Storage + CDN
+- **Container**: Serve with nginx
 
-### Using Python - Streaming Client
+### Full Stack Deployment
 
-```python
-import requests
-import json
-
-url = "http://localhost:8000/api/chat/stream"
-data = {
-    "message": "I want to visit Paris for 7 days",
-    "user_id": "user_001",
-    "session_id": "session_001"
-}
-
-response = requests.post(url, json=data, stream=True)
-
-for line in response.iter_lines():
-    if line:
-        # Remove 'data: ' prefix
-        if line.startswith(b'data: '):
-            event_data = json.loads(line[6:])
-
-            if event_data['type'] == 'content':
-                print(event_data['text'], end='', flush=True)
-            elif event_data['type'] == 'tool_call':
-                print(f"\n[Calling {event_data['tool']}...]")
-            elif event_data['type'] == 'done':
-                print(f"\n\n✅ Session: {event_data['session_id']}")
-                break
-```
-
-### Using Python - Non-Streaming Client
-
-```python
-import requests
-
-url = "http://localhost:8000/api/chat"
-data = {
-    "message": "What's the budget for 2 people visiting Tokyo?",
-    "user_id": "user_001",
-    "session_id": "session_001"
-}
-
-response = requests.post(url, json=data)
-result = response.json()
-
-print(f"Response: {result['response']}")
-print(f"Session: {result['session_id']}")
-```
-
-### Using JavaScript/Fetch - Streaming
-
-```javascript
-const eventSource = new EventSource('http://localhost:8000/api/chat/stream');
-
-eventSource.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-
-  if (data.type === 'content') {
-    document.getElementById('chat').innerHTML += data.text;
-  } else if (data.type === 'done') {
-    console.log('Conversation complete');
-    eventSource.close();
-  }
-};
-```
-
-## Test Client
-
-A simple test client is provided:
-
-```bash
-python test_client.py
-```
-
-This will:
-1. Create a new session
-2. Send multiple chat messages
-3. Display streaming responses
-4. Show final session state
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    FastAPI Application                      │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │              API Endpoints                            │  │
-│  │  • POST /api/chat/stream   (SSE streaming)           │  │
-│  │  • POST /api/chat          (non-streaming)           │  │
-│  │  • POST /api/sessions      (create session)          │  │
-│  │  • GET  /api/sessions      (list sessions)           │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                           ↓                                 │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                   Runner                              │  │
-│  │  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
-│  │  │   Agent     │  │SessionService│  │   Events    │  │  │
-│  │  │ coordinator │──│  (InMemory)  │──│   Stream    │  │  │
-│  │  │ 5 sub-agents│  │              │  │             │  │  │
-│  │  │ + tools     │  │   Session    │  │  Tool calls │  │  │
-│  │  │ + state     │  │   • state    │  │  Responses  │  │  │
-│  │  └─────────────┘  │   • events   │  │  State Δ    │  │  │
-│  │                   └──────────────┘  └─────────────┘  │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                           ↓
-                    SSE Event Stream
-                           ↓
-                      Client Browser
-```
-
-## Event Types
-
-The streaming endpoint returns different event types:
-
-### Content Event
-```json
-{
-  "type": "content",
-  "text": "Hello! I'm your tour planner...",
-  "role": "assistant"
-}
-```
-
-### Tool Call Event
-```json
-{
-  "type": "tool_call",
-  "tool": "search_destination",
-  "status": "executing"
-}
-```
-
-### Tool Result Event
-```json
-{
-  "type": "tool_result",
-  "tool": "search_destination",
-  "status": "completed"
-}
-```
-
-### Done Event
-```json
-{
-  "type": "done",
-  "session_id": "session_abc"
-}
-```
-
-### Error Event
-```json
-{
-  "type": "error",
-  "message": "Error description",
-  "error_type": "ValueError"
-}
-```
-
-## State Management
-
-The API uses Google ADK's session management:
-
-**State Scopes:**
-- `temp:destination` - Current trip destination (session only)
-- `temp:num_days` - Trip duration (session only)
-- `user:travel_interests` - User preferences (persistent across sessions)
-
-**Agent Outputs** (automatically saved):
-- `research_summary` - Destination research results
-- `budget_plan` - Budget calculations
-- `itinerary_plan` - Day-by-day itinerary
-
-## Production Deployment
-
-### Switch to Database Session Service
-
-For production, replace `InMemorySessionService` with `DatabaseSessionService`:
-
-```python
-from google.adk.sessions import DatabaseSessionService
-
-# In lifespan startup
-session_service = DatabaseSessionService(
-    connection_string="postgresql://user:pass@localhost/tourplanner"
-)
-```
-
-### Environment Variables
-
-```bash
-# Database (for DatabaseSessionService)
-DATABASE_URL=postgresql://user:pass@localhost/tourplanner
-
-# API Keys
-GROQ_API_KEY=your_groq_api_key
-GOOGLE_API_KEY=your_google_api_key
-
-# CORS (comma-separated)
-ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
-```
-
-### Run with Gunicorn
-
-```bash
-gunicorn api_server:app \
-  --workers 4 \
-  --worker-class uvicorn.workers.UvicornWorker \
-  --bind 0.0.0.0:8000 \
-  --timeout 120
-```
-
-### Docker Deployment
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8000
-CMD ["uvicorn", "api_server:app", "--host", "0.0.0.0", "--port", "8000"]
-```
+Recommended: Deploy backend and frontend separately
+- Backend: Cloud Run / App Engine
+- Frontend: Vercel / Netlify
+- Configure CORS and API URL
 
 ## Troubleshooting
 
-### Issue: Streaming not working
+### Backend Issues
 
-**Solution:** Ensure your client supports Server-Sent Events and doesn't buffer responses. Use `curl -N` or set appropriate headers.
+**Agent not responding**
+- Check Google Cloud credentials
+- Verify API keys in `.env`
+- Check logs for errors
 
-### Issue: CORS errors
+**CORS errors**
+- Ensure CORS middleware is configured
+- Check `allow_origins` in `api_server.py`
 
-**Solution:** Update `allow_origins` in the CORS middleware:
+### Frontend Issues
 
-```python
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your frontend URL
-    ...
-)
-```
+**Cannot connect to API**
+- Ensure backend is running on port 8000
+- Check proxy config in `vite.config.ts`
+- Verify `VITE_API_BASE_URL` in `.env`
 
-### Issue: Session not persisting
+**Streaming not working**
+- Check browser console for SSE errors
+- Verify `/api/chat/stream` endpoint
+- Check network tab for event-stream
 
-**Solution:** InMemorySessionService stores sessions in RAM only. Use DatabaseSessionService for persistence across restarts.
+### General Issues
 
-## Testing
+**Port conflicts**
+- Backend: Change port in `uvicorn` command
+- Frontend: Change `server.port` in `vite.config.ts`
 
-Run the test suite:
+**Missing dependencies**
+- Backend: `pip install -r requirements.txt`
+- Frontend: `npm install`
 
-```bash
-pytest test_api_server.py -v
-```
+## Best Practices
 
-## Related Files
+### Code Organization
 
-- `agent.py` - Tour planner coordinator and sub-agents (from POC-06)
-- `tools.py` - Travel planning tools with state management (from POC-06)
-- `api_server.py` - FastAPI application with streaming
-- `test_client.py` - Simple test client for streaming chat
+- ✅ Keep components small and focused
+- ✅ Use TypeScript for type safety
+- ✅ Centralize API calls in service layer
+- ✅ Use custom hooks for shared logic
+- ✅ Follow existing naming conventions
 
-## Resources
+### Error Handling
 
-- **Google ADK Docs**: https://google.github.io/adk-docs/
-- **FastAPI Docs**: https://fastapi.tiangolo.com/
-- **Server-Sent Events**: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+- ✅ Use unified error handling utilities
+- ✅ Log errors with context
+- ✅ Show user-friendly error messages
+- ✅ Handle network failures gracefully
+
+### Performance
+
+- ✅ Use React keys for list rendering
+- ✅ Implement proper loading states
+- ✅ Optimize re-renders with useMemo/useCallback
+- ✅ Keep API payloads small
+
+### Security
+
+- ✅ Validate user input
+- ✅ Sanitize displayed content
+- ✅ Use environment variables for secrets
+- ✅ Configure CORS appropriately
+- ✅ Implement rate limiting (production)
+
+## Contributing
+
+1. Follow the existing code style
+2. Add TypeScript types for new code
+3. Include error handling and logging
+4. Update documentation
+5. Test changes thoroughly
+
+## Future Enhancements
+
+### Backend
+- [ ] Database session storage (PostgreSQL/Firestore)
+- [ ] User authentication and authorization
+- [ ] Rate limiting and quotas
+- [ ] Metrics and monitoring
+- [ ] WebSocket support for bi-directional communication
+- [ ] Caching layer for tool responses
+
+### Frontend
+- [ ] Message virtualization for long conversations
+- [ ] Rich media support (images, maps)
+- [ ] Voice input support
+- [ ] Export conversation feature
+- [ ] Conversation search
+- [ ] User preferences and settings
+- [ ] PWA support for offline access
+
+### DevOps
+- [ ] Docker Compose for local development
+- [ ] CI/CD pipeline
+- [ ] Automated testing
+- [ ] Performance monitoring
+- [ ] Error tracking (Sentry)
+
+## License
+
+MIT
+
+## Support
+
+For issues and questions:
+- Backend: See `backend/README.md`
+- Frontend: See `frontend/README.md`
+- General: Create an issue in the repository
