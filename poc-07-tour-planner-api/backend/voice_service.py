@@ -147,6 +147,15 @@ class VoiceAgentService:
 
             if response.status_code != 200:
                 error_detail = response.text
+
+                # Check for terms acceptance requirement
+                if "model_terms_required" in error_detail:
+                    raise Exception(
+                        "PlayAI TTS requires terms acceptance. "
+                        "Please visit https://console.groq.com/playground?model=playai-tts "
+                        "and accept the terms, then restart the server."
+                    )
+
                 raise Exception(f"Speech synthesis failed: {error_detail}")
 
             return response.content
@@ -196,7 +205,17 @@ class VoiceAgentService:
             ) as response:
                 if response.status_code != 200:
                     error_detail = await response.aread()
-                    raise Exception(f"Speech synthesis failed: {error_detail}")
+                    error_text = error_detail.decode('utf-8') if isinstance(error_detail, bytes) else str(error_detail)
+
+                    # Check for terms acceptance requirement
+                    if "model_terms_required" in error_text:
+                        raise Exception(
+                            "PlayAI TTS requires terms acceptance. "
+                            "Please visit https://console.groq.com/playground?model=playai-tts "
+                            "and accept the terms, then restart the server."
+                        )
+
+                    raise Exception(f"Speech synthesis failed: {error_text}")
 
                 async for chunk in response.aiter_bytes(chunk_size):
                     if chunk:
