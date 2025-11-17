@@ -15,7 +15,12 @@ from pydantic import BaseModel
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_WHISPER_MODEL = "whisper-large-v3-turbo"
 GROQ_TTS_MODEL = "playai-tts"
+GROQ_CHAT_MODEL = "llama-3.3-70b-versatile"  # For summary generation
 GROQ_API_URL = "https://api.groq.com/openai/v1"
+
+# Voice response thresholds
+LONG_RESPONSE_CHARS = 300  # Consider response "long" if > 300 characters
+LONG_RESPONSE_SENTENCES = 3  # Or if > 3 sentences
 
 # Available TTS voices for Groq PlayAI
 GROQ_TTS_VOICES = [
@@ -265,6 +270,87 @@ class VoiceAgentService:
     def is_voice_enabled(self) -> bool:
         """Check if voice features are enabled"""
         return bool(self.groq_api_key)
+
+    def is_long_response(self, text: str) -> bool:
+        """
+        Determine if a response is too long for natural voice conversation
+
+        Args:
+            text: Response text to check
+
+        Returns:
+            True if response is considered long for voice, False otherwise
+        """
+        # Count characters
+        if len(text) > LONG_RESPONSE_CHARS:
+            return True
+
+        # Count sentences (rough approximation)
+        sentence_endings = text.count('.') + text.count('!') + text.count('?')
+        if sentence_endings > LONG_RESPONSE_SENTENCES:
+            return True
+
+        return False
+
+    async def generate_voice_summary(self, text: str, context: str = "travel planning") -> str:
+        """
+        Generate a short, conversational summary suitable for voice output
+
+        Args:
+            text: Full response text to summarize
+            context: Context of the conversation (e.g., "travel planning")
+
+        Returns:
+            Short summary (1-2 sentences) for voice output
+        """
+        if not self.groq_api_key:
+            # Fallback: simple truncation if no API key
+            sentences = text.split('.')[:2]
+            return '. '.join(s.strip() for s in sentences if s.strip()) + '.'
+
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            headers = {
+                "Authorization": f"Bearer {self.groq_api_key}",
+                "Content-Type": "application/json"
+            }
+
+            summary_prompt = f"""You are a voice assistant. The following is a detailed response about {context}.
+Create a SHORT, natural-sounding spoken summary (1-2 sentences max) that:
+- Sounds conversational and human-like
+- Tells the user what information you found/did
+- Encourages them to read the full details
+- Is concise enough to speak in under 10 seconds
+
+Full response:
+{text}
+
+Voice summary (1-2 sentences):"""
+
+            payload = {
+                "model": GROQ_CHAT_MODEL,
+                "messages": [
+                    {"role": "system", "content": "You are a helpful voice assistant. Generate concise, natural-sounding spoken summaries."},
+                    {"role": "user", "content": summary_prompt}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 100
+            }
+
+            response = await client.post(
+                f"{GROQ_API_URL}/chat/completions",
+                json=payload,
+                headers=headers
+            )
+
+            if response.status_code != 200:
+                # Fallback to simple truncation
+                sentences = text.split('.')[:2]
+                return '. '.join(s.strip() for s in sentences if s.strip()) + '.'
+
+            result = response.json()
+            summary = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+
+            return summary if summary else text[:200] + "..."
 
 # Global voice service instance
 voice_service = VoiceAgentService()

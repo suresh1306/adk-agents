@@ -607,7 +607,7 @@ async def voice_chat(
     audio: UploadFile = File(..., description="Audio message from user"),
     user_id: str = Form(..., description="User ID"),
     session_id: Optional[str] = Form(None, description="Session ID"),
-    voice: str = Form("alloy", description="Voice for response")
+    voice: str = Form("Jennifer-PlayAI", description="Voice for response (PlayAI format)")
 ):
     """
     Voice chat: transcribe audio, process with agent, return audio response
@@ -678,9 +678,20 @@ async def voice_chat(
         if not full_response.strip():
             full_response = "I apologize, I didn't understand that. Could you please rephrase?"
 
-        # 5. Stream TTS audio response
+        # 5. Determine if response is long - if so, generate summary for voice
+        is_long = voice_service.is_long_response(full_response)
+        spoken_text = full_response
+
+        if is_long:
+            # Generate short summary for voice output
+            spoken_text = await voice_service.generate_voice_summary(
+                full_response,
+                context="travel planning"
+            )
+
+        # 6. Stream TTS audio response (summary if long, full text if short)
         async def audio_stream():
-            async for chunk in voice_service.synthesize_speech_streaming(full_response, voice):
+            async for chunk in voice_service.synthesize_speech_streaming(spoken_text, voice):
                 yield chunk
 
         return StreamingResponse(
@@ -688,7 +699,10 @@ async def voice_chat(
             media_type="audio/mpeg",
             headers={
                 "X-Session-ID": sid,
-                "X-Transcribed-Text": text[:200],  # First 200 chars
+                "X-Transcribed-Text": text[:200],  # User's transcribed input (first 200 chars)
+                "X-Full-Response": full_response[:500],  # Full response text (first 500 chars for UI)
+                "X-Spoken-Text": spoken_text[:200],  # What was actually spoken
+                "X-Is-Summary": "true" if is_long else "false",  # Indicates if audio is summary
                 "Content-Disposition": "inline; filename=response.mp3"
             }
         )
