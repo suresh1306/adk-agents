@@ -22,7 +22,7 @@ interface UseVoiceChatOptions {
 }
 
 export function useVoiceChat(options: UseVoiceChatOptions) {
-  const { userId, sessionId, voice = 'alloy', onTranscription, onResponse } = options;
+  const { userId, sessionId, voice = 'Jennifer-PlayAI', onTranscription, onResponse } = options;
 
   const [state, setState] = useState<VoiceChatState>({
     isProcessing: false,

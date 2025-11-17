@@ -19,7 +19,7 @@ interface VoiceButtonProps {
 export const VoiceButton: React.FC<VoiceButtonProps> = ({
   userId,
   sessionId,
-  voice = 'alloy',
+  voice = 'Jennifer-PlayAI',
   onTranscription,
   disabled = false,
 }) => {
