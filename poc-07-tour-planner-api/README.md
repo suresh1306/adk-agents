@@ -26,12 +26,12 @@ pip install -r requirements.txt
 Create `.env` file:
 
 ```bash
-# Required: Groq API key for LLM
-GROQ_API_KEY=your_groq_api_key_here
-
-# Optional: For Gemini models
-# GOOGLE_API_KEY=your_google_api_key_here
+# Required: API keys for LLMs
+GROQ_API_KEY=your_groq_api_key_here       # For sub-agents
+GOOGLE_API_KEY=your_google_api_key_here   # For coordinator (Gemini)
 ```
+
+**Note:** The coordinator uses Gemini for better sub-agent support in Google ADK, while sub-agents use Groq for tool execution.
 
 ### 3. Run the API Server
 
