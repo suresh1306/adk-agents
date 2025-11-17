@@ -158,7 +158,7 @@ export const ChatPage: React.FC = () => {
           <VoiceButton
             userId={userId}
             sessionId={currentSession?.session_id}
-            voice="alloy"
+            voice="Jennifer-PlayAI"
             onTranscription={(text) => {
               // Send transcribed text as a message
               sendMessage(text);

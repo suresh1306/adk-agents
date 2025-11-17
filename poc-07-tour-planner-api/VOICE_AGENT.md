@@ -21,15 +21,33 @@ The Tour Planner now features a fully integrated voice agent with:
 - **High-Quality Recording**: 16kHz sample rate with noise suppression
 
 ### 🔊 Voice Output
-- **Natural Voices**: Choose from 6 different Groq PlayAI TTS voices
+- **Natural Voices**: Choose from 23+ different Groq PlayAI TTS voices
 - **Streaming Audio**: Immediate playback as audio is received
-- **Multiple Voice Options**:
-  - `alloy` - Neutral and balanced (default)
-  - `echo` - Warm and expressive
-  - `fable` - Clear and articulate
-  - `onyx` - Deep and authoritative
-  - `nova` - Energetic and friendly
-  - `shimmer` - Soft and gentle
+- **Female Voice Options**:
+  - `Jennifer-PlayAI` - Professional, clear (default)
+  - `Celeste-PlayAI` - Warm, friendly
+  - `Eleanor-PlayAI` - Sophisticated
+  - `Arista-PlayAI` - Clear, articulate
+  - `Adelaide-PlayAI` - Mature, professional
+  - `Aaliyah-PlayAI` - Young, energetic
+  - `Cheyenne-PlayAI` - Expressive
+  - `Gail-PlayAI` - Confident
+  - `Indigo-PlayAI` - Modern
+  - `Judy-PlayAI` - Cheerful
+  - `Deedee-PlayAI` - Playful
+  - `Mamaw-PlayAI` - Grandmother-like
+- **Male Voice Options**:
+  - `Atlas-PlayAI` - Strong, authoritative
+  - `Briggs-PlayAI` - Professional
+  - `Calum-PlayAI` - Friendly
+  - `Cillian-PlayAI` - Warm
+  - `Basil-PlayAI` - Mature
+  - `Angelo-PlayAI` - Young
+  - `Chip-PlayAI` - Energetic
+  - `Fritz-PlayAI` - Distinctive
+  - `Mason-PlayAI` - Casual
+  - `Mikail-PlayAI` - Sophisticated
+  - `Mitch-PlayAI` - Conversational
 
 ### 🎯 Intelligent Features
 - **Context Awareness**: Maintains conversation context across interactions
@@ -68,7 +86,7 @@ audio: <audio file>
 POST /api/voice/synthesize
 {
   "text": "Hello, how can I help you?",
-  "voice": "alloy",
+  "voice": "Jennifer-PlayAI",
   "model": "playai-tts"
 }
 ```

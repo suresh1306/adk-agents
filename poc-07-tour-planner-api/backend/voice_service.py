@@ -19,13 +19,36 @@ GROQ_API_URL = "https://api.groq.com/openai/v1"
 
 # Available TTS voices for Groq PlayAI
 GROQ_TTS_VOICES = [
-    "alloy",      # Neutral and balanced
-    "echo",       # Warm and expressive
-    "fable",      # Clear and articulate
-    "onyx",       # Deep and authoritative
-    "nova",       # Energetic and friendly
-    "shimmer"     # Soft and gentle
+    # Female voices
+    "Aaliyah-PlayAI",    # Young, energetic female
+    "Adelaide-PlayAI",   # Mature, professional female
+    "Arista-PlayAI",     # Clear, articulate female
+    "Celeste-PlayAI",    # Warm, friendly female
+    "Cheyenne-PlayAI",   # Expressive female
+    "Deedee-PlayAI",     # Playful female
+    "Eleanor-PlayAI",    # Sophisticated female
+    "Gail-PlayAI",       # Confident female
+    "Indigo-PlayAI",     # Modern female
+    "Jennifer-PlayAI",   # Professional female
+    "Judy-PlayAI",       # Cheerful female
+    "Mamaw-PlayAI",      # Grandmother-like female
+
+    # Male voices
+    "Angelo-PlayAI",     # Young male
+    "Atlas-PlayAI",      # Strong, authoritative male
+    "Basil-PlayAI",      # Mature male
+    "Briggs-PlayAI",     # Professional male
+    "Calum-PlayAI",      # Friendly male
+    "Chip-PlayAI",       # Energetic male
+    "Cillian-PlayAI",    # Warm male
+    "Fritz-PlayAI",      # Distinctive male
+    "Mason-PlayAI",      # Casual male
+    "Mikail-PlayAI",     # Sophisticated male
+    "Mitch-PlayAI",      # Conversational male
 ]
+
+# Default voice
+DEFAULT_VOICE = "Jennifer-PlayAI"  # Professional, clear female voice
 
 class AudioTranscription(BaseModel):
     text: str
@@ -105,7 +128,7 @@ class VoiceAgentService:
     async def synthesize_speech(
         self,
         text: str,
-        voice: str = "alloy",
+        voice: str = DEFAULT_VOICE,
         model: str = "playai-tts"
     ) -> bytes:
         """
@@ -113,7 +136,7 @@ class VoiceAgentService:
 
         Args:
             text: Text to synthesize
-            voice: Voice to use (alloy, echo, fable, onyx, nova, shimmer)
+            voice: Voice to use (see GROQ_TTS_VOICES for available options)
             model: TTS model (playai-tts)
 
         Returns:
@@ -124,8 +147,8 @@ class VoiceAgentService:
 
         # Validate voice
         if voice not in GROQ_TTS_VOICES:
-            print(f"⚠️  Voice '{voice}' not in available voices, using 'alloy'")
-            voice = "alloy"
+            print(f"⚠️  Voice '{voice}' not in available voices, using default '{DEFAULT_VOICE}'")
+            voice = DEFAULT_VOICE
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             headers = {
@@ -163,7 +186,7 @@ class VoiceAgentService:
     async def synthesize_speech_streaming(
         self,
         text: str,
-        voice: str = "alloy",
+        voice: str = DEFAULT_VOICE,
         chunk_size: int = 4096
     ) -> AsyncGenerator[bytes, None]:
         """
@@ -171,7 +194,7 @@ class VoiceAgentService:
 
         Args:
             text: Text to synthesize
-            voice: Voice to use
+            voice: Voice to use (see GROQ_TTS_VOICES for available options)
             chunk_size: Size of chunks to yield
 
         Yields:
@@ -182,8 +205,8 @@ class VoiceAgentService:
 
         # Validate voice
         if voice not in GROQ_TTS_VOICES:
-            print(f"⚠️  Voice '{voice}' not in available voices, using 'alloy'")
-            voice = "alloy"
+            print(f"⚠️  Voice '{voice}' not in available voices, using default '{DEFAULT_VOICE}'")
+            voice = DEFAULT_VOICE
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             headers = {

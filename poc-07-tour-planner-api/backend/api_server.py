@@ -97,14 +97,20 @@ class VoiceTranscriptionResponse(BaseModel):
 class VoiceSynthesisRequest(BaseModel):
     """Voice synthesis request"""
     text: str
-    voice: str = Field(default="alloy", description="Voice: alloy, echo, fable, onyx, nova, shimmer")
+    voice: str = Field(
+        default="Jennifer-PlayAI",
+        description="PlayAI voice (e.g., Jennifer-PlayAI, Atlas-PlayAI, Celeste-PlayAI)"
+    )
     model: str = Field(default="playai-tts", description="Model: playai-tts (Groq TTS)")
 
 class VoiceChatRequest(BaseModel):
     """Voice chat request"""
     user_id: str
     session_id: Optional[str] = None
-    voice: str = Field(default="alloy", description="Voice for response")
+    voice: str = Field(
+        default="Jennifer-PlayAI",
+        description="PlayAI voice for response (e.g., Jennifer-PlayAI, Atlas-PlayAI)"
+    )
 
 # ============================================================================
 # GLOBAL STATE
