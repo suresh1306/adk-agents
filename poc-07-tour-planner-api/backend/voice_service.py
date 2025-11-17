@@ -1,6 +1,6 @@
 """
 Voice Agent Service for Tour Planner
-Handles speech-to-text, text-to-speech, and voice streaming
+Handles speech-to-text, text-to-speech, and voice streaming using Groq API
 """
 
 import asyncio
@@ -14,12 +14,18 @@ from pydantic import BaseModel
 # Groq API configuration
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_WHISPER_MODEL = "whisper-large-v3-turbo"
+GROQ_TTS_MODEL = "playai-tts"
 GROQ_API_URL = "https://api.groq.com/openai/v1"
 
-# OpenAI TTS configuration (fallback to Groq if available)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_TTS_MODEL = "tts-1"
-OPENAI_TTS_VOICE = "alloy"  # Options: alloy, echo, fable, onyx, nova, shimmer
+# Available TTS voices for Groq PlayAI
+GROQ_TTS_VOICES = [
+    "alloy",      # Neutral and balanced
+    "echo",       # Warm and expressive
+    "fable",      # Clear and articulate
+    "onyx",       # Deep and authoritative
+    "nova",       # Energetic and friendly
+    "shimmer"     # Soft and gentle
+]
 
 class AudioTranscription(BaseModel):
     text: str
@@ -27,14 +33,13 @@ class AudioTranscription(BaseModel):
     duration: Optional[float] = None
 
 class VoiceAgentService:
-    """Service for voice agent capabilities"""
+    """Service for voice agent capabilities using Groq API"""
 
     def __init__(self):
         self.groq_api_key = GROQ_API_KEY
-        self.openai_api_key = OPENAI_API_KEY
 
         if not self.groq_api_key:
-            print("⚠️  GROQ_API_KEY not set - voice features will be limited")
+            print("⚠️  GROQ_API_KEY not set - voice features will be disabled")
 
     async def transcribe_audio(
         self,
@@ -101,36 +106,41 @@ class VoiceAgentService:
         self,
         text: str,
         voice: str = "alloy",
-        model: str = "tts-1"
+        model: str = "playai-tts"
     ) -> bytes:
         """
-        Convert text to speech using OpenAI TTS API
+        Convert text to speech using Groq PlayAI TTS API
 
         Args:
             text: Text to synthesize
             voice: Voice to use (alloy, echo, fable, onyx, nova, shimmer)
-            model: TTS model (tts-1 or tts-1-hd)
+            model: TTS model (playai-tts)
 
         Returns:
             Audio bytes in MP3 format
         """
-        if not self.openai_api_key:
-            raise ValueError("OPENAI_API_KEY is required for text-to-speech")
+        if not self.groq_api_key:
+            raise ValueError("GROQ_API_KEY is required for text-to-speech")
+
+        # Validate voice
+        if voice not in GROQ_TTS_VOICES:
+            print(f"⚠️  Voice '{voice}' not in available voices, using 'alloy'")
+            voice = "alloy"
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             headers = {
-                "Authorization": f"Bearer {self.openai_api_key}",
+                "Authorization": f"Bearer {self.groq_api_key}",
                 "Content-Type": "application/json"
             }
             payload = {
-                "model": model,
+                "model": GROQ_TTS_MODEL,
                 "input": text,
                 "voice": voice,
                 "response_format": "mp3"
             }
 
             response = await client.post(
-                "https://api.openai.com/v1/audio/speech",
+                f"{GROQ_API_URL}/audio/speech",
                 json=payload,
                 headers=headers
             )
@@ -148,7 +158,7 @@ class VoiceAgentService:
         chunk_size: int = 4096
     ) -> AsyncGenerator[bytes, None]:
         """
-        Stream synthesized speech in chunks
+        Stream synthesized speech in chunks using Groq PlayAI TTS
 
         Args:
             text: Text to synthesize
@@ -158,16 +168,21 @@ class VoiceAgentService:
         Yields:
             Audio chunks
         """
-        if not self.openai_api_key:
-            raise ValueError("OPENAI_API_KEY is required for text-to-speech")
+        if not self.groq_api_key:
+            raise ValueError("GROQ_API_KEY is required for text-to-speech")
+
+        # Validate voice
+        if voice not in GROQ_TTS_VOICES:
+            print(f"⚠️  Voice '{voice}' not in available voices, using 'alloy'")
+            voice = "alloy"
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             headers = {
-                "Authorization": f"Bearer {self.openai_api_key}",
+                "Authorization": f"Bearer {self.groq_api_key}",
                 "Content-Type": "application/json"
             }
             payload = {
-                "model": "tts-1",
+                "model": GROQ_TTS_MODEL,
                 "input": text,
                 "voice": voice,
                 "response_format": "mp3"
@@ -175,7 +190,7 @@ class VoiceAgentService:
 
             async with client.stream(
                 "POST",
-                "https://api.openai.com/v1/audio/speech",
+                f"{GROQ_API_URL}/audio/speech",
                 json=payload,
                 headers=headers
             ) as response:
@@ -207,7 +222,7 @@ class VoiceAgentService:
 
     def is_voice_enabled(self) -> bool:
         """Check if voice features are enabled"""
-        return bool(self.groq_api_key and self.openai_api_key)
+        return bool(self.groq_api_key)
 
 # Global voice service instance
 voice_service = VoiceAgentService()
