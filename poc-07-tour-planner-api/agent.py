@@ -40,7 +40,7 @@ CURRENT_YEAR = datetime.now().year
 
 # Create LiteLLM wrapper for Groq with tool-use optimized model
 # This model is specifically designed for function calling and tool use
-groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
+groq_model = LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct")
 
 # ============================================================================
 # SPECIALIZED SUB-AGENTS WITH STATE MANAGEMENT

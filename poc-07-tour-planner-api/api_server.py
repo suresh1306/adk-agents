@@ -36,7 +36,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService, Session
 from google.genai.types import Content, Part
 
-from agent import coordinator_agent
+from agent import root_agent
 
 # ============================================================================
 # PYDANTIC MODELS
@@ -108,7 +108,7 @@ async def lifespan(app: FastAPI):
 
     # Create runner
     runner = Runner(
-        agent=coordinator_agent,
+        agent=root_agent,
         session_service=session_service,
         app_name=APP_NAME
     )
