@@ -35,6 +35,7 @@ from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
+import re
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService, Session
@@ -42,6 +43,32 @@ from google.genai.types import Content, Part
 
 from agent import coordinator_agent
 from voice_service import voice_service, AudioTranscription
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+def sanitize_header_value(text: str) -> str:
+    """
+    Sanitize text for use in HTTP headers
+    - Remove newlines and replace with spaces
+    - Remove non-ASCII characters
+    - Remove control characters
+    """
+    if not text:
+        return ""
+
+    # Replace newlines and carriage returns with spaces
+    text = text.replace('\n', ' ').replace('\r', ' ')
+
+    # Replace multiple spaces with single space
+    text = re.sub(r'\s+', ' ', text)
+
+    # Keep only ASCII printable characters (32-126)
+    text = ''.join(char if 32 <= ord(char) <= 126 else ' ' for char in text)
+
+    # Trim and return
+    return text.strip()
 
 # ============================================================================
 # PYDANTIC MODELS
@@ -695,10 +722,10 @@ async def voice_chat(
             media_type="audio/mpeg",
             headers={
                 "X-Session-ID": sid,
-                "X-Transcribed-Text": text[:200],  # User's transcribed input (first 200 chars)
-                "X-Full-Response": full_response[:500],  # Full response text (first 500 chars for UI)
-                "X-Spoken-Text": spoken_text[:200],  # What was actually spoken
-                "X-Is-Summary": "true" if is_long else "false",  # Indicates if audio is summary
+                "X-Transcribed-Text": sanitize_header_value(text[:200]),  # User's transcribed input
+                "X-Full-Response": sanitize_header_value(full_response[:500]),  # Full response text
+                "X-Spoken-Text": sanitize_header_value(spoken_text[:200]),  # What was actually spoken
+                "X-Is-Summary": "true" if is_long else "false",
                 "Content-Disposition": "inline; filename=response.mp3"
             }
         )
