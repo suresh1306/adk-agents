@@ -275,22 +275,41 @@ async def list_sessions(user_id: str):
     if not session_service:
         raise HTTPException(status_code=500, detail="Session service not initialized")
 
-    sessions = await session_service.list_sessions(
+    # list_sessions returns tuples of (app_name, user_id, session_id)
+    session_keys = await session_service.list_sessions(
         app_name=APP_NAME,
         user_id=user_id
     )
 
-    return [
-        SessionResponse(
-            session_id=s.id,
-            user_id=s.user_id,
-            app_name=s.app_name,
-            state=s.state,
-            last_update_time=s.last_update_time,
-            event_count=len(s.events)
+    # Fetch full session details for each session
+    session_responses = []
+    for session_key in session_keys:
+        # session_key is a tuple: (app_name, user_id, session_id)
+        if isinstance(session_key, tuple) and len(session_key) == 3:
+            _, _, session_id = session_key
+        else:
+            # Fallback if format is different
+            continue
+
+        session = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=user_id,
+            session_id=session_id
         )
-        for s in sessions
-    ]
+
+        if session:
+            session_responses.append(
+                SessionResponse(
+                    session_id=session.id,
+                    user_id=session.user_id,
+                    app_name=session.app_name,
+                    state=session.state,
+                    last_update_time=session.last_update_time,
+                    event_count=len(session.events)
+                )
+            )
+
+    return session_responses
 
 @app.get("/api/sessions/{session_id}", response_model=SessionResponse)
 async def get_session(session_id: str, user_id: str):
