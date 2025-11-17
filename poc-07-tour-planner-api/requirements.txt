@@ -1,0 +1,21 @@
+# Google ADK
+google-adk>=0.1.0
+
+# LLM Provider
+litellm>=1.0.0
+
+# Web Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+
+# Tools Dependencies
+requests>=2.31.0
+ddgs>=0.1.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Optional: Database session service (for production)
+# sqlalchemy>=2.0.0
+# asyncpg>=0.29.0  # for PostgreSQL
