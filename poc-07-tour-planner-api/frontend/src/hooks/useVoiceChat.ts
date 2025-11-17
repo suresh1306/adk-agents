@@ -10,6 +10,9 @@ interface VoiceChatState {
   isProcessing: boolean;
   isPlayingAudio: boolean;
   transcribedText: string;
+  fullResponseText: string;
+  spokenText: string;
+  isSummary: boolean;
   error: string | null;
 }
 
@@ -28,6 +31,9 @@ export function useVoiceChat(options: UseVoiceChatOptions) {
     isProcessing: false,
     isPlayingAudio: false,
     transcribedText: '',
+    fullResponseText: '',
+    spokenText: '',
+    isSummary: false,
     error: null,
   });
 
@@ -68,10 +74,30 @@ export function useVoiceChat(options: UseVoiceChatOptions) {
 
         // Get transcribed text from headers
         const transcribedText = response.headers.get('X-Transcribed-Text') || '';
+        const fullResponseText = response.headers.get('X-Full-Response') || '';
+        const spokenText = response.headers.get('X-Spoken-Text') || '';
+        const isSummary = response.headers.get('X-Is-Summary') === 'true';
+
         if (transcribedText) {
           logger.info('Transcribed text', { text: transcribedText });
-          setState((prev) => ({ ...prev, transcribedText }));
+          setState((prev) => ({
+            ...prev,
+            transcribedText,
+            fullResponseText,
+            spokenText,
+            isSummary
+          }));
           onTranscription?.(transcribedText);
+        }
+
+        // Call onResponse with full text for UI display
+        if (fullResponseText) {
+          onResponse?.(fullResponseText);
+          logger.info('Response details', {
+            fullLength: fullResponseText.length,
+            spokenLength: spokenText.length,
+            isSummary
+          });
         }
 
         // Get audio response

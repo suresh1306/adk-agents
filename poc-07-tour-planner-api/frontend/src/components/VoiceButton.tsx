@@ -13,6 +13,7 @@ interface VoiceButtonProps {
   sessionId?: string;
   voice?: string;
   onTranscription?: (text: string) => void;
+  onResponse?: (text: string) => void;
   disabled?: boolean;
 }
 
@@ -21,6 +22,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
   sessionId,
   voice = 'Jennifer-PlayAI',
   onTranscription,
+  onResponse,
   disabled = false,
 }) => {
   const [isHolding, setIsHolding] = useState(false);
@@ -31,6 +33,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
     sessionId,
     voice,
     onTranscription,
+    onResponse,
   });
 
   const { state: recorderState } = voiceRecorder;
@@ -188,6 +191,16 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
         <div className="voice-transcription">
           <span className="transcription-label">You said:</span>
           <span className="transcription-text">{chatState.transcribedText}</span>
+        </div>
+      )}
+
+      {/* Summary indicator */}
+      {chatState.isSummary && chatState.spokenText && (
+        <div className="voice-summary-info">
+          <span className="summary-icon">ℹ️</span>
+          <span className="summary-text">
+            Voice summary played. Full response shown in chat.
+          </span>
         </div>
       )}
 

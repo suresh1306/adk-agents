@@ -56,6 +56,43 @@ The Tour Planner now features a fully integrated voice agent with:
 - **Error Handling**: Graceful fallback with helpful error messages
 - **Accessibility**: Full keyboard navigation and ARIA labels
 
+### 💬 Natural Conversation Mode
+
+The voice agent now speaks like a real human travel advisor:
+
+**Smart Summary Generation**
+- **Short Responses** (< 300 chars): Agent speaks the full response naturally
+- **Long Responses** (> 300 chars or > 3 sentences): Agent provides a brief spoken summary
+- **Full Text Always Displayed**: Complete response shown in chat UI while summary plays
+- **Visual Indicators**: UI shows when a summary was spoken vs. full text
+
+**Example Interactions:**
+
+*Short Response (spoken in full):*
+```
+User: "What's the weather in Paris?"
+Agent: "Paris in spring is lovely! Temperatures range from 10-15°C
+        with occasional rain. Pack layers and an umbrella!"
+```
+
+*Long Response (summary spoken, full text displayed):*
+```
+User: "Create a 5-day itinerary for Tokyo"
+Agent speaks: "I've created a 5-day Tokyo itinerary for you with
+               cultural sites, temples, and amazing food experiences.
+               Check the details on screen!"
+
+Agent displays: [Full detailed day-by-day itinerary with times,
+                locations, activities, restaurants, etc.]
+```
+
+**Benefits:**
+- ✅ **Natural Flow**: Short, conversational voice responses
+- ✅ **Efficient**: Don't have to listen to long lists or details
+- ✅ **Informative**: Full information available to read
+- ✅ **Time-Saving**: Quick voice summaries for detailed plans
+- ✅ **Accessible**: Both audio and visual information provided
+
 ## Architecture
 
 ### Backend Components
@@ -69,6 +106,13 @@ class VoiceAgentService:
     - synthesize_speech(): TTS using Groq PlayAI
     - synthesize_speech_streaming(): Streaming TTS
     - process_voice_message(): End-to-end voice processing
+    - is_long_response(): Detect if response needs summarization
+    - generate_voice_summary(): Create short conversational summaries
+```
+
+**Thresholds:**
+- Long response: > 300 characters OR > 3 sentences
+- Summary length: 1-2 sentences max (< 10 seconds to speak)
 ```
 
 #### 2. API Endpoints
@@ -99,7 +143,16 @@ Content-Type: multipart/form-data
 audio: <audio file>
 user_id: user_123
 session_id: session_abc (optional)
-voice: alloy (optional)
+voice: Jennifer-PlayAI (optional)
+
+Response Headers:
+X-Session-ID: session_abc
+X-Transcribed-Text: User's transcribed input
+X-Full-Response: Complete agent response text
+X-Spoken-Text: What was actually spoken (full or summary)
+X-Is-Summary: "true" or "false"
+
+Response Body: Audio stream (MP3)
 ```
 
 ### Frontend Components
