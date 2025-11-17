@@ -14,7 +14,7 @@ from google.adk.models.lite_llm import LiteLlm
 from tools import web_search, calculate, format_text
 
 # Create LiteLLM wrapper for Groq (shared by all agents)
-groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
+groq_model = LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct")
 
 # Create specialized sub-agents
 

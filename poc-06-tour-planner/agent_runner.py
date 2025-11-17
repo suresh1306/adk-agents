@@ -35,7 +35,7 @@ CURRENT_DATE = datetime.now().strftime("%B %d, %Y")
 CURRENT_YEAR = datetime.now().year
 
 # Create LiteLLM wrapper for Groq with tool-use optimized model
-groq_model = LiteLlm(model="groq/llama-3-groq-70b-8192-tool-use-preview")
+groq_model = LiteLlm(model="groq/meta-llama/llama-4-scout-17b-16e-instruct")
 
 # ============================================================================
 # SPECIALIZED SUB-AGENTS WITH STATE MANAGEMENT
